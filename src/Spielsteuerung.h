@@ -69,6 +69,8 @@ int BallPos(Ball *PtrB,
 			Hinderniss *Hinderniss2Ptr,
 			int *Gewinner);
 void StartPosBall(Ball *SpielballPtr, SpielModus *ModusPtr, int *GewinnerPtr);
+void GeschwBallErhoehen(int *Startzeit, SpielModus *ModusPtr, Ball *Spielball1Ptr,Schlaeger *Schlaeger2Ptr,Schlaeger *Schlaeger1Ptr);
+
 
 //Schlaegerfunktionen
 void BerechneSchlaegerdimension(Schlaeger *Ptr1, Schlaeger *Ptr2, SpielModus *ModusPtr, AnzeigeParameter *PtrA);

@@ -480,5 +480,82 @@ void StartPosBall(Ball *SpielballPtr, SpielModus *ModusPtr, int *GewinnerPtr){
 **	Ende StartPosBall
 *****************************************************************************/
 
+/**
+*****************************************************************************
+**	Projekt Pong
+**	BTE 5052	FS2015
+*****************************************************************************
+**
+**	Funktionsname   	: GeschwBallErhoehen
+**
+**	Funktion   			: Erhéhung der Ballgeschwindigkeit nach einer bestimmten Spielzeit
+**
+**	Rückgabe			: Nichts
+**
+**	Input				: Zeiger auf die Spielparameter, Zeiger auf die Startzeit, Zeiger auf den Spielball, Zeiger auf die Schläger
+**
+**	Output				: Es wird direkt an die Adresse der Anzeigeparameter geschrieben.
+**
+** 	Author				: kupfe1/alles1
+**
+
+******************************************************************************/
+
+void GeschwBallErhoehen(int *Startzeit, SpielModus *ModusPtr, Ball *Spielball1Ptr,Schlaeger *Schlaeger2Ptr,Schlaeger *Schlaeger1Ptr){
+		//Variablen deklarieren
+		int Zeitdiff;
+
+		Zeitdiff=time(NULL)-(*Startzeit);
+
+		switch(ModusPtr->Schwierigkeitsgrad){
+
+			case 1:	if(Zeitdiff>20 && ((Spielball1Ptr->xpos<=Schlaeger1Ptr->xpos) || (Spielball1Ptr->xpos>=Schlaeger2Ptr->xpos))){
+						Spielball1Ptr->GeschwindigkeitsFaktor++;
+						*Startzeit=time(NULL);
+					}
+					//Testprint
+					printf("Zeitdiff: %d\t Geschwindigkeitsfaktor: %d\n",Zeitdiff,Spielball1Ptr->GeschwindigkeitsFaktor);
+					break;
+
+			case 2:	if(Zeitdiff>16 && ((Spielball1Ptr->xpos<=Schlaeger1Ptr->xpos) || (Spielball1Ptr->xpos>=Schlaeger2Ptr->xpos))){
+						Spielball1Ptr->GeschwindigkeitsFaktor++;
+						*Startzeit=time(NULL);
+					}
+					//Testprint
+					printf("Zeitdiff: %d\t Geschwindigkeitsfaktor: %d\n",Zeitdiff,Spielball1Ptr->GeschwindigkeitsFaktor);
+					break;
+
+			case 3:	if(Zeitdiff>12 && ((Spielball1Ptr->xpos<=Schlaeger1Ptr->xpos) || (Spielball1Ptr->xpos>=Schlaeger2Ptr->xpos))){
+						Spielball1Ptr->GeschwindigkeitsFaktor++;
+						*Startzeit=time(NULL);
+					}
+					//Testprint
+					printf("Zeitdiff: %d\t Geschwindigkeitsfaktor: %d\n",Zeitdiff,Spielball1Ptr->GeschwindigkeitsFaktor);
+					break;
+
+			case 4:	if(Zeitdiff>12 && ((Spielball1Ptr->xpos<=Schlaeger1Ptr->xpos) || (Spielball1Ptr->xpos>=Schlaeger2Ptr->xpos))){
+						Spielball1Ptr->GeschwindigkeitsFaktor++;
+						*Startzeit=time(NULL);
+					}
+					//Testprint
+					printf("Zeitdiff: %d\t Geschwindigkeitsfaktor: %d\n",Zeitdiff,Spielball1Ptr->GeschwindigkeitsFaktor);
+					break;
+
+			case 5:	if(Zeitdiff>12 && ((Spielball1Ptr->xpos<=Schlaeger1Ptr->xpos) || (Spielball1Ptr->xpos>=Schlaeger2Ptr->xpos))){
+						Spielball1Ptr->GeschwindigkeitsFaktor++;
+						*Startzeit=time(NULL);
+					}
+					//Testprint
+					printf("Zeitdiff: %d\t Geschwindigkeitsfaktor: %d\n",Zeitdiff,Spielball1Ptr->GeschwindigkeitsFaktor);
+					break;
+
+			default: break;
+		}
+}
+
+/*****************************************************************************
+**	Ende GeschwBallErhoehen
+*****************************************************************************/
+
 
 
