@@ -118,7 +118,7 @@ void SpielSteuerung(SpielModus *ModusPtr, PunkteHighscore *PunkteAnwaerterPtr){
 
 	//Steuervariablen
 	int Ball1ImSpiel;								//Abbruchflag wenn der Ball 1 ins Aus geht
-//	int Ball2ImSpiel;								//Abbruchflag wenn der Ball 2 ins Aus geht
+	int Ball2ImSpiel;								//Abbruchflag wenn der Ball 2 ins Aus geht
 	int EscGedrueckt;								//Abbruchflag wenn ESC gedrückt wird
 	int ZeitZaehler;								//Zähler um nach einer gewissen Spielzeit die Balleschwindigkeit zu erhöhen
 	int Gewinner=0;									//Gewinner = 1 bei Sieg von Spieler 1, Gewinner = 2 bei Sieg von Spieler 2.
@@ -134,16 +134,16 @@ void SpielSteuerung(SpielModus *ModusPtr, PunkteHighscore *PunkteAnwaerterPtr){
 	if(ModusPtr->SpielMod==1){
 
 		//Steuervariablen initialisieren
-		Ball1ImSpiel=1;								//Abbruchflag wenn der Ball 1 ins Aus geht,
-		EscGedrueckt=1;								//Abbruchflag wenn ESC gedrückt wird
-		ZeitZaehler=0;								//Zähler um nach einer gewissen Spielzeit die Balleschwindigkeit zu erhöhen
+		Ball1ImSpiel=1;								//Abbruchflag wenn der Ball 1 ins Aus geht initialisieren
+		Ball2ImSpiel=1;								//Abbruchflag wenn der Ball 2 ins Aus geht initialisieren
+		EscGedrueckt=1;								//Abbruchflag wenn ESC gedrückt wird initialisieren
+		ZeitZaehler=0;								//Zähler um nach einer gewissen Spielzeit die Balleschwindigkeit zu erhöhen initialisieren
 
 
-		//Wenn im Level 5 gespielt wird, zweiter Ball initialisieren
-		if(ModusPtr->Schwierigkeitsgrad==5){
-
-		//Startposition Ball	2					//Provisorisch
-		Spielball2Ptr->xnull=400;
+		//Wenn im Level 5 und im Zweispielermodus gespielt wird, zweiter Ball initialisieren
+		if(ModusPtr->Schwierigkeitsgrad==5 && ModusPtr->ZweiSpieler==1){
+		//Startparameter Ball	2
+		Spielball2Ptr->xnull=650;
 		Spielball2Ptr->ynull=500;
 		Spielball2Ptr->vx=-3;
 		Spielball2Ptr->vy=0;
@@ -172,10 +172,10 @@ void SpielSteuerung(SpielModus *ModusPtr, PunkteHighscore *PunkteAnwaerterPtr){
 
 
 			//Spielschleife
-			while(Ball1ImSpiel != 0 && EscGedrueckt !=0){
+			while(Ball2ImSpiel !=0 && Ball1ImSpiel != 0 && EscGedrueckt !=0){
 
 			//Anzahl Inkremente bei denen die Geschwindigkeit, bis Faktor 3, erhöht wird ist Abhängig vom gespielten Schwierigkeitsgrad. Bei höheren Levels, bis zum Level 3, wird die Geschwindigkeit schneller erhöht.
-			if(ZeitZaehler>(2000/(ModusPtr->Schwierigkeitsgrad)) && (Spielball1Ptr->GeschwindigkeitsFaktor<8)){
+			if(ZeitZaehler>(2000/(ModusPtr->Schwierigkeitsgrad)) && (Spielball1Ptr->GeschwindigkeitsFaktor<7)){
 				//Nur wenn der Ball auf Höhe eines Schlägers ist, Geschwindigkeitsfaktor des Balles erhöhen
 				if((Spielball1Ptr->xpos<=Schlaeger1Ptr->xpos) || (Spielball1Ptr->xpos>=Schlaeger2Ptr->xpos)){
 					Spielball1Ptr->GeschwindigkeitsFaktor++;
@@ -183,8 +183,15 @@ void SpielSteuerung(SpielModus *ModusPtr, PunkteHighscore *PunkteAnwaerterPtr){
 				}
 			}
 
-			//Ballposition berechnen
+			//Ballposition von Ball 1 berechnen
 			Ball1ImSpiel=BallPos(Spielball1Ptr,Schlaeger1Ptr,Schlaeger2Ptr, &(UebergabeAnzeigePtr->XPosBall1),&(UebergabeAnzeigePtr->YPosBall1), ModusPtr,Hinderniss1Ptr,Hinderniss2Ptr, GewinnerPtr);
+
+			//Ballposition von Ball 2 berechnen
+			if(ModusPtr->Schwierigkeitsgrad==5 && ModusPtr->ZweiSpieler==1){
+
+			Ball2ImSpiel=BallPos(Spielball2Ptr,Schlaeger1Ptr,Schlaeger2Ptr, &(UebergabeAnzeigePtr->XPosBall2),&(UebergabeAnzeigePtr->YPosBall2), ModusPtr,Hinderniss1Ptr,Hinderniss2Ptr, GewinnerPtr);
+
+			}
 
 			//Position Schläger 1 und 2 berechnen
 			EscGedrueckt=SchlaegerPos(Schlaeger1Ptr,Schlaeger2Ptr,UebergabeAnzeigePtr, ModusPtr);
@@ -215,6 +222,7 @@ void SpielSteuerung(SpielModus *ModusPtr, PunkteHighscore *PunkteAnwaerterPtr){
 		//Steuervariablen initialisieren
 		EscGedrueckt=1;								//Abbruchflag wenn ESC gedrückt wird
 
+
 		//Punkte GUI initialisieren
 		PunkteGUI(ModusPtr, GewinnerPtr, UebergabeAnzeigePtr);
 
@@ -225,14 +233,15 @@ void SpielSteuerung(SpielModus *ModusPtr, PunkteHighscore *PunkteAnwaerterPtr){
 		while(ModusPtr->Schwierigkeitsgrad<6 && EscGedrueckt != 0){
 
 			//Steuervariablen initialisieren
-			Ball1ImSpiel=1;							//Abbruchflag wenn der Ball ins Aus geht,
+			Ball1ImSpiel=1;							//Abbruchflag wenn der Ball ins Aus geht
+			Ball2ImSpiel=1;							//Abbruchflag wenn der Ball 2 ins Aus geht initialisieren
 			ZeitZaehler=0;							//Zähler um nach einer gewissen Spielzeit die Balleschwindigkeit zu erhöhen
 
 
 			//Wenn im Level 5 gespielt wird, zweiter Ball initialisieren
-			if(ModusPtr->Schwierigkeitsgrad==5){
-			//Startposition Ball	2					//Provisorisch
-			Spielball2Ptr->xnull=400;
+			if(ModusPtr->Schwierigkeitsgrad==5 && ModusPtr->ZweiSpieler==1){
+			//Startparameter Ball	2
+			Spielball2Ptr->xnull=650;
 			Spielball2Ptr->ynull=500;
 			Spielball2Ptr->vx=-3;
 			Spielball2Ptr->vy=0;
@@ -260,7 +269,7 @@ void SpielSteuerung(SpielModus *ModusPtr, PunkteHighscore *PunkteAnwaerterPtr){
 			}
 
 				//Spielschleife
-				while(Ball1ImSpiel != 0 && EscGedrueckt !=0){
+				while(Ball2ImSpiel !=0 && Ball1ImSpiel != 0 && EscGedrueckt !=0){
 
 				//Anzahl Inkremente bei denen die Geschwindigkeit, bis Faktor 3, erhöht wird ist Abhängig vom gespielten Schwierigkeitsgrad. Bei höheren Levels, bis zum Level 3, wird die Geschwindigkeit schneller erhöht.
 				if(ZeitZaehler>(2000/(ModusPtr->Schwierigkeitsgrad)) && (Spielball1Ptr->GeschwindigkeitsFaktor<8)){
@@ -273,6 +282,11 @@ void SpielSteuerung(SpielModus *ModusPtr, PunkteHighscore *PunkteAnwaerterPtr){
 
 				//Ballposition berechnen
 				Ball1ImSpiel=BallPos(Spielball1Ptr,Schlaeger1Ptr,Schlaeger2Ptr,  &(UebergabeAnzeigePtr->XPosBall1), &(UebergabeAnzeigePtr->YPosBall1), ModusPtr, Hinderniss1Ptr, Hinderniss2Ptr, GewinnerPtr);
+
+				//Ballposition von Ball 2 berechnen
+				if(ModusPtr->Schwierigkeitsgrad==5 && ModusPtr->ZweiSpieler==1){
+				Ball2ImSpiel=BallPos(Spielball2Ptr,Schlaeger1Ptr,Schlaeger2Ptr, &(UebergabeAnzeigePtr->XPosBall2),&(UebergabeAnzeigePtr->YPosBall2), ModusPtr,Hinderniss1Ptr,Hinderniss2Ptr, GewinnerPtr);
+				}
 
 				//Position Schläger 1 und 2 berechnen
 				EscGedrueckt=SchlaegerPos(Schlaeger1Ptr,Schlaeger2Ptr,UebergabeAnzeigePtr,ModusPtr);

@@ -265,14 +265,14 @@ static void Schlaeger2(Ball *SpielballPtr, Schlaeger *Schlaeger2Ptr){
 int BallPos(Ball *SpielballPtr,
 			Schlaeger *Schlaeger1Ptr,
 			Schlaeger *Schlaeger2Ptr,
-			int *XposBall,int *YposBall,
+			int *XposBall,int *YposBall,					//Zeiger auf die Positionen in der Anzeigestruktur
 			SpielModus *ModusPtr,
 			Hinderniss *Hinderniss1Ptr,
 			Hinderniss *Hinderniss2Ptr,
 			int *Gewinner)
 {
 	//Feldbeschränkung für die Berechnungen
-	int xmin=10,xmax=1300,ymin=10,ymax=730;
+	int xmin=10,xmax=1275,ymin=10,ymax=730;
 
 	//Um an den Spielfeldgrenzen ein "Festkleben" des Balles zu verhindern, wird für eine gewisse Anzahl Zeitdurchläufe
 	//die Steuerung deaktiviert.
