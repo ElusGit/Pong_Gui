@@ -174,8 +174,8 @@ void ZeichneSpielfeld(AnzeigeParameter *PtrA,SpielModus *ModusPtr)
 
 			DrawFilledCircle(PtrA->XPosBall1,(PtrA->YPosBall1),20,20, COL_GREEN, 1) ;
 
-			if(ModusPtr->Schwierigkeitsgrad==5){
-			DrawFilledCircle(PtrA->XPosBall2,(PtrA->YPosBall2),20,20, COL_GREEN, 1) ;
+			if(ModusPtr->Schwierigkeitsgrad==5 && ModusPtr->ZweiSpieler==1){
+			DrawFilledCircle(PtrA->XPosBall2,(PtrA->YPosBall2),20,20, COL_RED, 1) ;
 			}
 			WaitMs(5);
 
