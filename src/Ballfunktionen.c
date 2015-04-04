@@ -1,0 +1,484 @@
+/*
+ * Ballfunktionen.c
+ *
+ *  Created on: 08.03.2015
+ *      Author: Eliott Kupferschmied
+ */
+/**
+*****************************************************************************
+**	Projekt Pong
+**	BTE 5052	FS2015
+*****************************************************************************
+**
+**	File        : Ballfunktionen.c
+**
+**	Funktion   	: Unterfunktionen der Ballpositionsberechnung. Hauptfunktion für die Ballpositionsberechnung
+**
+**	Parameter	: Initialisationswerte...
+**
+** 	Author		: kupfe1/alles1
+**
+**	Version		: 1V04
+**
+**	History		: .....
+**
+**	Pendenzen	: Levelvariationen
+**
+**	Bugs		: Abprallverhalten optimieren
+**
+**	Tests		: Test von 1V00 am 12.03.2015
+**				  Test von 1V01 am 15.03.2015
+**				  Test von 1V02 am 16.03.2015
+**				  Test von 1V03 am 22.03.2015
+**				  Test von 1V04 am 01.04.2015
+**
+******************************************************************************/
+
+
+/* imports */
+#include "error.h"
+#include "window.h"
+#include "communication.h"
+#include <stdio.h>
+#include <math.h>
+#include <string.h>
+#include <stdlib.h>
+#include "Spielsteuerung.h"
+#include "Header.h"
+#include <time.h>
+
+
+//Funktionsdeklarationen der Unterfunktionen
+static void UntereObereWand(Ball *SpielballPtr);
+static void Schlaeger1(Ball *SpielballPtr, Schlaeger *Schlaeger1Ptr);
+static void Schlaeger2(Ball *SpielballPtr, Schlaeger *Schlaeger2Ptr);
+static void HindernissAbprall(Ball *SpielballPtr);
+
+/**
+*****************************************************************************
+**	Projekt Pong
+**	BTE 5052	FS2015
+*****************************************************************************
+**
+**	Funktionsname   	: UntereObereWand
+**
+**	Funktion   			: Verhalten des Balles steuern, wenn er auf eine Wand auftrifft.
+**
+**	Rückgabe			: Keine
+**
+**	Input				: Zeiger auf den Spielball
+**
+**	Output				: Es wird direkt an die Adresse des Spielballes geschrieben
+**
+** 	Author				: kupfe1/alles1
+
+**
+******************************************************************************/
+
+static void UntereObereWand(Ball *SpielballPtr){
+
+		//Neuer Geschwindigkeitsvektor, Vorzeichen ändern der Y Komponente
+		SpielballPtr->vy=-1*(SpielballPtr->vy);
+
+		//Bewegungsgleichung neu aufsetzen
+		SpielballPtr->xnull=SpielballPtr->xpos;							//Neuer Nullvektor Zuweisen
+		SpielballPtr->ynull=SpielballPtr->ypos;
+		SpielballPtr->Zeit=1;											//Zeit zurücksetzen
+}
+
+/**
+*****************************************************************************
+**	Projekt Pong
+**	BTE 5052	FS2015
+*****************************************************************************
+**
+**	Funktionsname   	: UntereObereWand
+**
+**	Funktion   			: Verhalten des Balles steuern, wenn er auf eine Wand auftrifft.
+**
+**	Rückgabe			: Keine
+**
+**	Input				: Zeiger auf den Spielball
+**
+**	Output				: Es wird direkt an die Adresse des Spielballes geschrieben
+**
+** 	Author				: kupfe1/alles1
+**
+**	Tests				: Test von 1V02 am 13.03.2015
+**
+******************************************************************************/
+
+static void HindernissAbprall(Ball *SpielballPtr){
+
+		//Neuer Geschwindigkeitsvektor, Vorzeichen ändern der Y Komponente
+		SpielballPtr->vx=-1*(SpielballPtr->vx);
+
+		//Bewegungsgleichung neu aufsetzen
+		SpielballPtr->xnull=SpielballPtr->xpos;							//Neuer Nullvektor Zuweisen
+		SpielballPtr->ynull=SpielballPtr->ypos;
+		SpielballPtr->Zeit=1;											//Zeit zurücksetzen
+}
+
+/**
+*****************************************************************************
+**	Projekt Pong
+**	BTE 5052	FS2015
+*****************************************************************************
+**
+**	Funktionsname   	: Schlaeger1
+**
+**	Funktion   			: Verhalten des Balles steuern, wenn er auf den linken Schläger auftrifft.
+**
+**	Rückgabe			: Keine
+**
+**	Input				: Zeiger auf den Spielball, Zeiger auf den Schläger 1
+**
+**	Output				: Es wird direkt an die Adresse des Spielballes geschrieben
+**
+** 	Author				: kupfe1/alles1
+**
+**	Tests				: Test von 1V02 am 13.03.2015
+**
+******************************************************************************/
+
+static void Schlaeger1(Ball *SpielballPtr, Schlaeger *Schlaeger1Ptr){
+
+	//Ist der Ball innerhalb der Zone A des Schlägers
+	if(SpielballPtr->ypos>=Schlaeger1Ptr->ypos && SpielballPtr->ypos<Schlaeger1Ptr->yzonea){
+		//Abprallverhalten durch Änderung des Geschwindigkeitsvektores
+		SpielballPtr->vx=-1*(SpielballPtr->vx-1);					//X Komponente invertieren (SpielballPtr->vx-1)
+		SpielballPtr->vy=-1*((abs(SpielballPtr->vy)+2));				//Nach oben ablenken und Geschwindigkeit erhöhen (abs(SpielballPtr->vy)+2)
+	}
+
+	//Ist der Ball innerhalb der Zone B des Schlägers
+	if(SpielballPtr->ypos>=Schlaeger1Ptr->yzonea && SpielballPtr->ypos<Schlaeger1Ptr->yzoneb){
+		//Abprallverhalten durch Änderung des Geschwindigkeitsvektores
+		SpielballPtr->vx=(abs(SpielballPtr->vx));					//X Komponente invertieren und Geschwindigkeit erhöhen
+		SpielballPtr->vy=-1;										//Ablenken mit Y-Komponente = -1, zwingender Abprall leicht nach oben
+	}
+
+	//Ist der Ball innerhalb der Zone C des Schlägers
+	if(SpielballPtr->ypos>=Schlaeger1Ptr->yzoneb && SpielballPtr->ypos<Schlaeger1Ptr->yzonec){
+		//Abprallverhalten durch Änderung des Geschwindigkeitsvektores
+		SpielballPtr->vx=(abs(SpielballPtr->vx));					//X Komponente invertieren und Geschwindigkeit erhöhen
+		SpielballPtr->vy=1;											//Ablenken mit Y-Komponente = 1, zwingender Abprall leicht nach unten
+	}
+
+	//Ist der Ball innerhalb der Zone D des Schlägers
+	if(SpielballPtr->ypos>=Schlaeger1Ptr->yzonec && SpielballPtr->ypos<Schlaeger1Ptr->yzoned){
+		//Abprallverhalten durch Änderung des Geschwindigkeitsvektores
+		SpielballPtr->vx=-1*((SpielballPtr->vx-1));					//X Komponente invertieren(SpielballPtr->vx-1)
+		SpielballPtr->vy=(SpielballPtr->vy)+2;						//Nach unten ablenken und Geschwindigkeit erhöhenabs((SpielballPtr->vy)+2)
+	}
+
+
+	//Bewegungsgleichung neu aufsetzen
+	SpielballPtr->xnull=SpielballPtr->xpos;							//Neuer Nullvektor zuweisen
+	SpielballPtr->ynull=SpielballPtr->ypos;
+	SpielballPtr->Zeit=1;											//Zeitkomponente rücksetzen										//Zeit zurücksetzen
+}
+
+/**
+*****************************************************************************
+**	Projekt Pong
+**	BTE 5052	FS2015
+*****************************************************************************
+**
+**	Funktionsname   	: Schlaeger2
+**
+**	Funktion   			: Verhalten des Balles steuern, wenn er auf den rechten Schläger auftrifft.
+**
+**	Rückgabe			: Keine
+**
+**	Input				: Zeiger auf den Spielball, Zeiger auf den Schläger 2
+**
+**	Output				: Es wird direkt an die Adresse des Spielballes geschrieben
+**
+** 	Author				: kupfe1/alles1
+**
+**	Tests				: Test von 1V02 am 13.03.2015
+**
+******************************************************************************/
+
+static void Schlaeger2(Ball *SpielballPtr, Schlaeger *Schlaeger2Ptr){
+
+	//Ist der Ball innerhalb der Zone A des Schlägers
+	if(SpielballPtr->ypos>=Schlaeger2Ptr->ypos && SpielballPtr->ypos<Schlaeger2Ptr->yzonea){
+	//Abprallverhalten durch Änderung des Geschwindigkeitsvektores
+		SpielballPtr->vx=-1*(SpielballPtr->vx-1);					//X Komponente invertieren
+		SpielballPtr->vy=-1*(abs(SpielballPtr->vy)+2);			//Nach oben ablenken und Geschwindigkeit erhöhen
+	}
+
+	//Ist der Ball innerhalb der Zone B des Schlägers
+	if(SpielballPtr->ypos>=Schlaeger2Ptr->yzonea && SpielballPtr->ypos<Schlaeger2Ptr->yzoneb){
+		//Abprallverhalten durch Änderung des Geschwindigkeitsvektores
+		SpielballPtr->vx=-1*(abs(SpielballPtr->vx));			//X Komponente invertieren und Geschwindigkeit erhöhen
+		SpielballPtr->vy=-1;									//Ablenken mit Y-Komponente = -1, zwingender Abprall leicht nach oben
+	}
+
+	//Ist der Ball innerhalb der Zone C des Schlägers
+	if(SpielballPtr->ypos>=Schlaeger2Ptr->yzoneb && SpielballPtr->ypos<Schlaeger2Ptr->yzonec){
+		//Abprallverhalten durch Änderung des Geschwindigkeitsvektores
+		SpielballPtr->vx=-1*(abs(SpielballPtr->vx));			//X Komponente invertieren und Geschwindigkeit erhöhen
+		SpielballPtr->vy=1;										//Ablenken mit Y-Komponente = 1, zwingender Abprall leicht nach unten
+	}
+
+	//Ist der Ball innerhalb der Zone D des Schlägers
+	if(SpielballPtr->ypos>=Schlaeger2Ptr->yzonec && SpielballPtr->ypos<Schlaeger2Ptr->yzoned){
+		//Abprallverhalten durch Änderung des Geschwindigkeitsvektores
+		SpielballPtr->vx=-1*(SpielballPtr->vx-1);					//X Komponente invertieren
+		SpielballPtr->vy=(abs(SpielballPtr->vy)+2);				//Nach unten ablenken und Geschwindigkeit erhöhen
+	}
+
+
+	//Bewegungsgleichung neu aufsetzen
+	SpielballPtr->xnull=SpielballPtr->xpos;						//Neuer Nullvektor zuweisen
+	SpielballPtr->ynull=SpielballPtr->ypos;
+	SpielballPtr->Zeit=1;										//Zeitkomponente rücksetzen
+}
+
+/*****************************************************************************
+**	Ende der Unterfnuktionen zur Ballpositionsbestimmungen
+*****************************************************************************/
+/**
+*****************************************************************************
+**	Projekt Pong
+**	BTE 5052	FS2015
+*****************************************************************************
+**
+**	Funktionsname   	: BallPos
+**
+**	Funktion   			: Berechnug der nächsten Ballposition und je nach Ort das entsprechende Abprallverhalten ausführen.
+**
+**	Rückgabe			: Abbruchmeldung für die Spielschleife
+**
+**	Input				: Zeiger auf den Spielball, Zeiger auf den Schläger 1, Zeiger auf Schläger 2, Zeiger auf die Anzeigeparameter, Zeiger auf den Modus.
+**
+**	Output				: Es wird direkt an die jeweilige Adresse geschrieben.
+**
+** 	Author				: kupfe1/alles1
+**
+**	Tests				: Test von 1V02 am 13.03.2015
+**
+******************************************************************************/
+//Ballposition
+int BallPos(Ball *SpielballPtr,
+			Schlaeger *Schlaeger1Ptr,
+			Schlaeger *Schlaeger2Ptr,
+			int *XposBall,int *YposBall,
+			SpielModus *ModusPtr,
+			Hinderniss *Hinderniss1Ptr,
+			Hinderniss *Hinderniss2Ptr,
+			int *Gewinner)
+{
+	//Feldbeschränkung für die Berechnungen
+	int xmin=10,xmax=1300,ymin=10,ymax=730;
+
+	//Um an den Spielfeldgrenzen ein "Festkleben" des Balles zu verhindern, wird für eine gewisse Anzahl Zeitdurchläufe
+	//die Steuerung deaktiviert.
+	if((SpielballPtr->Zeit)>4){
+
+		//Abprallfälle durchtesten
+
+		//Obere Wand und untere Wand
+		if(SpielballPtr->ypos <= ymin || SpielballPtr->ypos >=ymax){
+			//Funktion Verhalten bei Abprall an der unteren und oberen Wand
+			UntereObereWand(SpielballPtr);
+		}
+
+		//Ist der Ball auf Höhe des Schlägers 1 auf der X Achse
+		if(SpielballPtr->xpos<=Schlaeger1Ptr->xpos){
+			//Ist der Ball innerhalb des Schlägers
+			if(SpielballPtr->ypos>=Schlaeger1Ptr->ypos && SpielballPtr->ypos<=Schlaeger1Ptr->yzoned){
+				//Funktion Verhalten bei Abprall am linken Schläger aufrufen
+				Schlaeger1(SpielballPtr,Schlaeger1Ptr);
+			}
+		}
+
+		//Ist der Ball auf Höhe des Schlägers 2 auf der X Achse
+		if(SpielballPtr->xpos>=Schlaeger2Ptr->xpos){
+			//Ist der Ball innerhalb des Schlägers
+			if(SpielballPtr->ypos>=Schlaeger2Ptr->ypos && SpielballPtr->ypos<=Schlaeger2Ptr->yzoned){
+				//Funktion Verhalten bei Abprall am rechten Schläger aufrufen
+				Schlaeger2(SpielballPtr,Schlaeger2Ptr);
+			}
+		}
+
+		//Hindernisse ab Level 4
+		if(ModusPtr->Schwierigkeitsgrad>=4){
+			//Prallt der Ball auf Hindeniss 1 (links)
+			//Fliegt der Ball gegen rechts
+			if(SpielballPtr->vx>0){
+				//Ist der Ball auf Höhe des Hindernisses auf der X Achse
+				if(SpielballPtr->xpos >= Hinderniss1Ptr->xpos && SpielballPtr->xpos < (Hinderniss1Ptr->xpos)+25){		//Um Abpraller hinter dem Hinderniss zu unterdrücken
+					//Ist der Ball auf der Höhe des Hindernisses auf der Y Achse										//wird die Aufprallzone hinter dem Hinderniss begrenzt
+					if(SpielballPtr->ypos >= Hinderniss1Ptr->ypos && SpielballPtr->ypos <= Hinderniss1Ptr->ymax){
+						HindernissAbprall(SpielballPtr);
+					}
+				}
+			}
+			//Fliegt der Ball nach links
+			else
+			{
+				//Ist der Ball auf Höhe des Hindernisses auf der X Achse
+				if(SpielballPtr->xpos <= (Hinderniss1Ptr->xpos+15) && SpielballPtr->xpos > (Hinderniss1Ptr->xpos)-15){		//Um Abpraller hinter dem Hinderniss zu unterdrücken
+					//Ist der Ball auf der Höhe des Hindernisses auf der Y Achse											//wird die Aufprallzone hinter dem Hinderniss begrenzt
+					if(SpielballPtr->ypos >= Hinderniss1Ptr->ypos && SpielballPtr->ypos <= Hinderniss1Ptr->ymax){
+						HindernissAbprall(SpielballPtr);
+					}
+				}
+			}
+
+			//Prallt der Ball auf Hinderniss 2 (rechts)
+			//Fliegt der Ball nach rechts
+			if(SpielballPtr->vx>0){
+				//Ist der Ball auf Höhe des Hindernisses auf der X Achse
+				if(SpielballPtr->xpos >= Hinderniss2Ptr->xpos && SpielballPtr->xpos < (Hinderniss2Ptr->xpos)+25){		//Um Abpraller hinter dem Hinderniss zu unterdrücken
+					//Ist der Ball auf der Höhe des Hindernisses auf der Y Achse										//wird die Aufprallzone hinter dem Hinderniss begrenzt
+					if(SpielballPtr->ypos >= Hinderniss2Ptr->ypos && SpielballPtr->ypos <= Hinderniss2Ptr->ymax){
+						HindernissAbprall(SpielballPtr);
+					}
+				}
+			}
+			//Fliegt der Ball nach links
+			else
+			{
+				//Ist der Ball auf Höhe des Hindernisses auf der X Achse
+				if(SpielballPtr->xpos <= (Hinderniss2Ptr->xpos+15) && SpielballPtr->xpos > (Hinderniss2Ptr->xpos)-15){		//Um Abpraller hinter dem Hinderniss zu unterdrücken
+					//Ist der Ball auf der Höhe des Hindernisses auf der Y Achse											//wird die Aufprallzone hinter dem Hinderniss begrenzt
+					if(SpielballPtr->ypos >= Hinderniss2Ptr->ypos && SpielballPtr->ypos <= Hinderniss2Ptr->ymax){
+						HindernissAbprall(SpielballPtr);
+					}
+				}
+			}
+		}
+
+		//Geht der Ball ins Aus bei Spieler 1
+		if(SpielballPtr->xpos<=xmin && !(SpielballPtr->ypos>=Schlaeger1Ptr->ypos && SpielballPtr->ypos<=Schlaeger1Ptr->yzoned)){		// Ball darf nicht innerhalb des Schlägers 1 sein
+			//Sieger bestimmen
+			*Gewinner=2;
+			SpielballPtr->Zeit=1;									//Zeitkomponente rücksetzen
+			return 0;												//Abbruchrückmeldung
+		}
+
+		//Geht der Ball ins Aus bei Spieler 2
+		if(SpielballPtr->xpos>=xmax && !(SpielballPtr->ypos>=Schlaeger2Ptr->ypos && SpielballPtr->ypos<=Schlaeger2Ptr->yzoned)){		// Ball darf nicht innerhalb des Schlägers 2 sein
+			//Sieger bestimmen
+			*Gewinner=1;
+			SpielballPtr->Zeit=1;									//Zeitkomponente rücksetzen
+			return 0;												//Abbruchrückmeldung
+		}
+
+	}
+
+	//Berechnug der neuen Koordinaten des Balles mit der Bewegungsgleichung
+	SpielballPtr->xpos=(SpielballPtr->xnull) + (SpielballPtr->GeschwindigkeitsFaktor)*(SpielballPtr->Zeit)*(SpielballPtr->vx);
+	SpielballPtr->ypos=(SpielballPtr->ynull) + (SpielballPtr->GeschwindigkeitsFaktor)*(SpielballPtr->Zeit)*(SpielballPtr->vy);
+
+	//Speicherung der Ballposition in der Anzeigestruktur
+	*XposBall=SpielballPtr->xpos;
+	*YposBall=SpielballPtr->ypos;
+
+	//Zeit inkrementieren und zwischenspeichern
+	SpielballPtr->Zeit += 1;
+
+	return 1;														//Keine Abbruchrückmeldung
+}
+
+/*****************************************************************************
+**	Ende BallPos
+*****************************************************************************/
+
+/**
+*****************************************************************************
+**	Projekt Pong
+**	BTE 5052	FS2015
+*****************************************************************************
+**
+**	Funktionsname   	: StartPosBall
+**
+**	Funktion   			: Berechnug der Startposition des Balles am Anfang eines Spiels
+**
+**	Rückgabe			: Nichts
+**
+**	Input				: Zeiger auf den Spielball, Zeiger auf den Modus und Zeiger auf den Gewinner
+**
+**	Output				: Es wird direkt an die Adresse des Spielball geschrieben.
+**
+** 	Author				: kupfe1/alles1
+**
+******************************************************************************/
+void StartPosBall(Ball *SpielballPtr, SpielModus *ModusPtr, int *GewinnerPtr){
+
+		//Variablen
+		int Zufallszahl;										//Zufallszahl um die erste Startposition zu bestimmen
+		int FaktorStartgeschwindigkeit=1;						//Faktor um die Startgeschwindigkeit levelabhängig zu machen
+
+		//Zufallszahl generieren
+		Zufallszahl=time(NULL)%2;
+
+		//Faktor Startgeschwindigkeit anpassen
+		if(ModusPtr->Schwierigkeitsgrad==1){
+			FaktorStartgeschwindigkeit=1;
+		}
+		if(ModusPtr->Schwierigkeitsgrad==2){
+			FaktorStartgeschwindigkeit=2;
+		}
+		if(ModusPtr->Schwierigkeitsgrad>=3){
+			FaktorStartgeschwindigkeit=3;
+		}
+
+
+		printf("Zufallszahl: %d\n", Zufallszahl);
+		printf("Gewinner: %d\n", *GewinnerPtr);
+
+		switch(*GewinnerPtr){
+
+			case 0:	if(Zufallszahl==1){
+						SpielballPtr->xnull=25;
+						SpielballPtr->ynull=420;
+						SpielballPtr->vx=2;
+						SpielballPtr->vy=0;
+						SpielballPtr->Zeit=1;
+						SpielballPtr->GeschwindigkeitsFaktor=2*FaktorStartgeschwindigkeit;
+					}
+					else{
+						SpielballPtr->xnull=1250;
+						SpielballPtr->ynull=420;
+						SpielballPtr->vx=-2;
+						SpielballPtr->vy=0;
+						SpielballPtr->Zeit=1;
+						SpielballPtr->GeschwindigkeitsFaktor=2*FaktorStartgeschwindigkeit;
+					}
+
+					break;
+
+			case 1:		SpielballPtr->xnull=1250;
+						SpielballPtr->ynull=420;
+						SpielballPtr->vx=-2;
+						SpielballPtr->vy=0;
+						SpielballPtr->Zeit=1;
+						SpielballPtr->GeschwindigkeitsFaktor=2*FaktorStartgeschwindigkeit;
+
+					break;
+
+			case 2:		SpielballPtr->xnull=25;
+						SpielballPtr->ynull=420;
+						SpielballPtr->vx=2;
+						SpielballPtr->vy=0;
+						SpielballPtr->Zeit=1;
+						SpielballPtr->GeschwindigkeitsFaktor=2*FaktorStartgeschwindigkeit;
+
+					break;
+
+			default:
+					break;
+		}
+}
+
+/*****************************************************************************
+**	Ende StartPosBall
+*****************************************************************************/
+
+
+
