@@ -61,6 +61,7 @@
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>
+#include <time.h>
 #include "Spielsteuerung.h"
 #include "Header.h"
 
@@ -120,15 +121,19 @@ void SpielSteuerung(SpielModus *ModusPtr, PunkteHighscore *PunkteAnwaerterPtr){
 	int Ball1ImSpiel;								//Abbruchflag wenn der Ball 1 ins Aus geht
 	int Ball2ImSpiel;								//Abbruchflag wenn der Ball 2 ins Aus geht
 	int EscGedrueckt;								//Abbruchflag wenn ESC gedrückt wird
-	int ZeitZaehler;								//Zähler um nach einer gewissen Spielzeit die Balleschwindigkeit zu erhöhen
 	int Gewinner=0;									//Gewinner = 1 bei Sieg von Spieler 1, Gewinner = 2 bei Sieg von Spieler 2.
 	int ZaehlerCountdown;							//Zählervariable für die Countdown Schleife
+	int Startzeit;									//Startzeit des Spieles
+
+
 
 	//Zeiger für Steuervariablen
 	int *GewinnerPtr;								//Zeiger für die Gewinnervariable
+	int *StartzeitPtr;								//Zeiger für die Startzeit
 
 	//Zeiger für Steuervariablen initialisieren
 	GewinnerPtr=&Gewinner;
+	StartzeitPtr=&Startzeit;
 
 	//Auswahl des Spielmodus
 	if(ModusPtr->SpielMod==1){
@@ -137,7 +142,6 @@ void SpielSteuerung(SpielModus *ModusPtr, PunkteHighscore *PunkteAnwaerterPtr){
 		Ball1ImSpiel=1;								//Abbruchflag wenn der Ball 1 ins Aus geht initialisieren
 		Ball2ImSpiel=1;								//Abbruchflag wenn der Ball 2 ins Aus geht initialisieren
 		EscGedrueckt=1;								//Abbruchflag wenn ESC gedrückt wird initialisieren
-		ZeitZaehler=0;								//Zähler um nach einer gewissen Spielzeit die Balleschwindigkeit zu erhöhen initialisieren
 
 
 		//Wenn im Level 5 und im Zweispielermodus gespielt wird, zweiter Ball initialisieren
@@ -145,8 +149,8 @@ void SpielSteuerung(SpielModus *ModusPtr, PunkteHighscore *PunkteAnwaerterPtr){
 		//Startparameter Ball	2
 		Spielball2Ptr->xnull=650;
 		Spielball2Ptr->ynull=500;
-		Spielball2Ptr->vx=-3;
-		Spielball2Ptr->vy=0;
+		Spielball2Ptr->vx=-2;
+		Spielball2Ptr->vy=1;
 		Spielball2Ptr->Zeit=1;
 		Spielball2Ptr->GeschwindigkeitsFaktor=2;
 		}
@@ -157,6 +161,9 @@ void SpielSteuerung(SpielModus *ModusPtr, PunkteHighscore *PunkteAnwaerterPtr){
 
 		//Startposition Ball berechnen
 		StartPosBall(Spielball1Ptr, ModusPtr, GewinnerPtr);
+
+		//Startzeit einlesen
+		*StartzeitPtr=time(NULL);							//Startzeit setzen
 
 		//Hindernissposition berechen falls im Level 4 oder 5 gespielt wird
 		if(ModusPtr->Schwierigkeitsgrad>=4){
@@ -174,23 +181,17 @@ void SpielSteuerung(SpielModus *ModusPtr, PunkteHighscore *PunkteAnwaerterPtr){
 			//Spielschleife
 			while(Ball2ImSpiel !=0 && Ball1ImSpiel != 0 && EscGedrueckt !=0){
 
-			//Anzahl Inkremente bei denen die Geschwindigkeit, bis Faktor 3, erhöht wird ist Abhängig vom gespielten Schwierigkeitsgrad. Bei höheren Levels, bis zum Level 3, wird die Geschwindigkeit schneller erhöht.
-			if(ZeitZaehler>(2000/(ModusPtr->Schwierigkeitsgrad)) && (Spielball1Ptr->GeschwindigkeitsFaktor<7)){
-				//Nur wenn der Ball auf Höhe eines Schlägers ist, Geschwindigkeitsfaktor des Balles erhöhen
-				if((Spielball1Ptr->xpos<=Schlaeger1Ptr->xpos) || (Spielball1Ptr->xpos>=Schlaeger2Ptr->xpos)){
-					Spielball1Ptr->GeschwindigkeitsFaktor++;
-					ZeitZaehler=0;							//Zähler Rücksetzen
-				}
+			//Vorfaktor der Geschwindigkeit erhöhen
+			if(Spielball1Ptr->GeschwindigkeitsFaktor<8){							//Vorfaktor begrenzen um nicht eine zu hohe Geschwindigkeit zu erhalten
+				GeschwBallErhoehen(StartzeitPtr,ModusPtr,Spielball1Ptr,Schlaeger2Ptr,Schlaeger1Ptr);
 			}
 
 			//Ballposition von Ball 1 berechnen
 			Ball1ImSpiel=BallPos(Spielball1Ptr,Schlaeger1Ptr,Schlaeger2Ptr, &(UebergabeAnzeigePtr->XPosBall1),&(UebergabeAnzeigePtr->YPosBall1), ModusPtr,Hinderniss1Ptr,Hinderniss2Ptr, GewinnerPtr);
 
 			//Ballposition von Ball 2 berechnen
-			if(ModusPtr->Schwierigkeitsgrad==5 && ModusPtr->ZweiSpieler==1){
-
+			if(ModusPtr->Schwierigkeitsgrad==5 && ModusPtr->ZweiSpieler==1){		//Nur im Zweispielermodus möglich
 			Ball2ImSpiel=BallPos(Spielball2Ptr,Schlaeger1Ptr,Schlaeger2Ptr, &(UebergabeAnzeigePtr->XPosBall2),&(UebergabeAnzeigePtr->YPosBall2), ModusPtr,Hinderniss1Ptr,Hinderniss2Ptr, GewinnerPtr);
-
 			}
 
 			//Position Schläger 1 und 2 berechnen
@@ -204,11 +205,6 @@ void SpielSteuerung(SpielModus *ModusPtr, PunkteHighscore *PunkteAnwaerterPtr){
 			//Bild Zeichnen
 			ZeichneSpielfeld(UebergabeAnzeigePtr,ModusPtr);
 
-
-			//Zeit inkrementieren
-			ZeitZaehler++;
-			//Testprint
-			printf("%d\n",ZeitZaehler);
 			//Warten
 			WaitMs(2);
 
@@ -235,16 +231,14 @@ void SpielSteuerung(SpielModus *ModusPtr, PunkteHighscore *PunkteAnwaerterPtr){
 			//Steuervariablen initialisieren
 			Ball1ImSpiel=1;							//Abbruchflag wenn der Ball ins Aus geht
 			Ball2ImSpiel=1;							//Abbruchflag wenn der Ball 2 ins Aus geht initialisieren
-			ZeitZaehler=0;							//Zähler um nach einer gewissen Spielzeit die Balleschwindigkeit zu erhöhen
-
 
 			//Wenn im Level 5 gespielt wird, zweiter Ball initialisieren
 			if(ModusPtr->Schwierigkeitsgrad==5 && ModusPtr->ZweiSpieler==1){
 			//Startparameter Ball	2
 			Spielball2Ptr->xnull=650;
 			Spielball2Ptr->ynull=500;
-			Spielball2Ptr->vx=-3;
-			Spielball2Ptr->vy=0;
+			Spielball2Ptr->vx=-2;
+			Spielball2Ptr->vy=-1;
 			Spielball2Ptr->Zeit=1;
 			Spielball2Ptr->GeschwindigkeitsFaktor=2;
 			}
@@ -260,6 +254,8 @@ void SpielSteuerung(SpielModus *ModusPtr, PunkteHighscore *PunkteAnwaerterPtr){
 			//Startposition Ball berechnen
 			StartPosBall(Spielball1Ptr, ModusPtr, GewinnerPtr);
 
+			//Startzeit einlesen
+			*StartzeitPtr=time(NULL);							//Startzeit setzen
 
 			//Countdown
 			for(ZaehlerCountdown=1; ZaehlerCountdown<=3;ZaehlerCountdown++){
@@ -271,20 +267,16 @@ void SpielSteuerung(SpielModus *ModusPtr, PunkteHighscore *PunkteAnwaerterPtr){
 				//Spielschleife
 				while(Ball2ImSpiel !=0 && Ball1ImSpiel != 0 && EscGedrueckt !=0){
 
-				//Anzahl Inkremente bei denen die Geschwindigkeit, bis Faktor 3, erhöht wird ist Abhängig vom gespielten Schwierigkeitsgrad. Bei höheren Levels, bis zum Level 3, wird die Geschwindigkeit schneller erhöht.
-				if(ZeitZaehler>(2000/(ModusPtr->Schwierigkeitsgrad)) && (Spielball1Ptr->GeschwindigkeitsFaktor<8)){
-					//Nur wenn der Ball auf Höhe eines Schlägers ist, Geschwindigkeitsfaktor des Balles erhöhen
-					if((Spielball1Ptr->xpos<=Schlaeger1Ptr->xpos) || (Spielball1Ptr->xpos>=Schlaeger2Ptr->xpos)){
-						Spielball1Ptr->GeschwindigkeitsFaktor++;
-						ZeitZaehler=0;							//Zähler Rücksetzen
-					}
+				//Vorfaktor der Geschwindigkeit erhöhen
+				if(Spielball1Ptr->GeschwindigkeitsFaktor<8){						//Vorfaktor begrenzen um nicht eine zu hohe Geschwindigkeit zu erhalten
+					GeschwBallErhoehen(StartzeitPtr,ModusPtr,Spielball1Ptr,Schlaeger2Ptr,Schlaeger1Ptr);
 				}
 
 				//Ballposition berechnen
 				Ball1ImSpiel=BallPos(Spielball1Ptr,Schlaeger1Ptr,Schlaeger2Ptr,  &(UebergabeAnzeigePtr->XPosBall1), &(UebergabeAnzeigePtr->YPosBall1), ModusPtr, Hinderniss1Ptr, Hinderniss2Ptr, GewinnerPtr);
 
 				//Ballposition von Ball 2 berechnen
-				if(ModusPtr->Schwierigkeitsgrad==5 && ModusPtr->ZweiSpieler==1){
+				if(ModusPtr->Schwierigkeitsgrad==5 && ModusPtr->ZweiSpieler==1){	//Nur im Zweispielermodus möglich
 				Ball2ImSpiel=BallPos(Spielball2Ptr,Schlaeger1Ptr,Schlaeger2Ptr, &(UebergabeAnzeigePtr->XPosBall2),&(UebergabeAnzeigePtr->YPosBall2), ModusPtr,Hinderniss1Ptr,Hinderniss2Ptr, GewinnerPtr);
 				}
 
@@ -298,7 +290,6 @@ void SpielSteuerung(SpielModus *ModusPtr, PunkteHighscore *PunkteAnwaerterPtr){
 
 				//Bild Zeichnen (provisorisch)
 				ZeichneSpielfeld(UebergabeAnzeigePtr,ModusPtr);
-
 
 
 				//Level Anzeigen (Provisorisch)
@@ -318,12 +309,6 @@ void SpielSteuerung(SpielModus *ModusPtr, PunkteHighscore *PunkteAnwaerterPtr){
 
 				DrawTextXY(1300,600, COL_GREEN, "Level 5");
 				}
-
-				//Zeit inkrementieren
-				ZeitZaehler++;
-				//Testprint
-				printf("Zaehler:%d\n",ZeitZaehler);
-				printf("Faktor:%d\n",Spielball1Ptr->GeschwindigkeitsFaktor);
 
 				//Warten
 				WaitMs(2);
