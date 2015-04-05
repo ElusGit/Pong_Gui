@@ -419,13 +419,13 @@ void StartPosBall(Ball *SpielballPtr, SpielModus *ModusPtr, int *GewinnerPtr){
 
 		//Faktor Startgeschwindigkeit anpassen
 		if(ModusPtr->Schwierigkeitsgrad==1){
-			FaktorStartgeschwindigkeit=1;
+			FaktorStartgeschwindigkeit=3;
 		}
 		if(ModusPtr->Schwierigkeitsgrad==2){
-			FaktorStartgeschwindigkeit=2;
+			FaktorStartgeschwindigkeit=4;
 		}
 		if(ModusPtr->Schwierigkeitsgrad>=3){
-			FaktorStartgeschwindigkeit=3;
+			FaktorStartgeschwindigkeit=5;
 		}
 
 
@@ -440,7 +440,7 @@ void StartPosBall(Ball *SpielballPtr, SpielModus *ModusPtr, int *GewinnerPtr){
 						SpielballPtr->vx=2;
 						SpielballPtr->vy=0;
 						SpielballPtr->Zeit=1;
-						SpielballPtr->GeschwindigkeitsFaktor=2*FaktorStartgeschwindigkeit;
+						SpielballPtr->GeschwindigkeitsFaktor=FaktorStartgeschwindigkeit;
 					}
 					else{
 						SpielballPtr->xnull=1250;
@@ -448,7 +448,7 @@ void StartPosBall(Ball *SpielballPtr, SpielModus *ModusPtr, int *GewinnerPtr){
 						SpielballPtr->vx=-2;
 						SpielballPtr->vy=0;
 						SpielballPtr->Zeit=1;
-						SpielballPtr->GeschwindigkeitsFaktor=2*FaktorStartgeschwindigkeit;
+						SpielballPtr->GeschwindigkeitsFaktor=FaktorStartgeschwindigkeit;
 					}
 
 					break;
@@ -458,7 +458,7 @@ void StartPosBall(Ball *SpielballPtr, SpielModus *ModusPtr, int *GewinnerPtr){
 						SpielballPtr->vx=-2;
 						SpielballPtr->vy=0;
 						SpielballPtr->Zeit=1;
-						SpielballPtr->GeschwindigkeitsFaktor=2*FaktorStartgeschwindigkeit;
+						SpielballPtr->GeschwindigkeitsFaktor=FaktorStartgeschwindigkeit;
 
 					break;
 
@@ -488,65 +488,69 @@ void StartPosBall(Ball *SpielballPtr, SpielModus *ModusPtr, int *GewinnerPtr){
 **
 **	Funktionsname   	: GeschwBallErhoehen
 **
-**	Funktion   			: Erhéhung der Ballgeschwindigkeit nach einer bestimmten Spielzeit
+**	Funktion   			: Erhöhung der Ballgeschwindigkeit nach einer bestimmten Spielzeit
 **
 **	Rückgabe			: Nichts
 **
 **	Input				: Zeiger auf die Spielparameter, Zeiger auf die Startzeit, Zeiger auf den Spielball, Zeiger auf die Schläger
 **
-**	Output				: Es wird direkt an die Adresse der Anzeigeparameter geschrieben.
+**	Output				: Es wird direkt an die Adresse des Spielballes geschrieben.
 **
-** 	Author				: kupfe1/alles1
+** 	Author				: kupfe1
 **
-
 ******************************************************************************/
 
 void GeschwBallErhoehen(int *Startzeit, SpielModus *ModusPtr, Ball *Spielball1Ptr,Schlaeger *Schlaeger2Ptr,Schlaeger *Schlaeger1Ptr){
+
 		//Variablen deklarieren
-		int Zeitdiff;
+		int Zeitdiff;												//Variable um die Zeitdifferenz in Sekunden zu speichern
 
 		Zeitdiff=time(NULL)-(*Startzeit);
 
 		switch(ModusPtr->Schwierigkeitsgrad){
-
-			case 1:	if(Zeitdiff>20 && ((Spielball1Ptr->xpos<=Schlaeger1Ptr->xpos) || (Spielball1Ptr->xpos>=Schlaeger2Ptr->xpos))){
+					//Geschwindikeitserhöhung im Level 1
+			case 1:	if(Zeitdiff>20 && ((Spielball1Ptr->xpos<=Schlaeger1Ptr->xpos) || (Spielball1Ptr->xpos>=Schlaeger2Ptr->xpos))){			//Geschwindigkeit wird nur erhöht, wenn der Ball auf einen Schläger trifft
 						Spielball1Ptr->GeschwindigkeitsFaktor++;
 						*Startzeit=time(NULL);
 					}
 					//Testprint
-					printf("Zeitdiff: %d\t Geschwindigkeitsfaktor: %d\n",Zeitdiff,Spielball1Ptr->GeschwindigkeitsFaktor);
+					//printf("Zeitdiff: %d\t Geschwindigkeitsfaktor: %d\n",Zeitdiff,Spielball1Ptr->GeschwindigkeitsFaktor);
 					break;
 
-			case 2:	if(Zeitdiff>16 && ((Spielball1Ptr->xpos<=Schlaeger1Ptr->xpos) || (Spielball1Ptr->xpos>=Schlaeger2Ptr->xpos))){
+					//Geschwindikeitserhöhung im Level 2
+			case 2:	if(Zeitdiff>16 && ((Spielball1Ptr->xpos<=Schlaeger1Ptr->xpos) || (Spielball1Ptr->xpos>=Schlaeger2Ptr->xpos))){			//Geschwindigkeit wird nur erhöht, wenn der Ball auf einen Schläger trifft
 						Spielball1Ptr->GeschwindigkeitsFaktor++;
 						*Startzeit=time(NULL);
 					}
 					//Testprint
-					printf("Zeitdiff: %d\t Geschwindigkeitsfaktor: %d\n",Zeitdiff,Spielball1Ptr->GeschwindigkeitsFaktor);
+					//printf("Zeitdiff: %d\t Geschwindigkeitsfaktor: %d\n",Zeitdiff,Spielball1Ptr->GeschwindigkeitsFaktor);
 					break;
 
-			case 3:	if(Zeitdiff>12 && ((Spielball1Ptr->xpos<=Schlaeger1Ptr->xpos) || (Spielball1Ptr->xpos>=Schlaeger2Ptr->xpos))){
+					//Geschwindikeitserhöhung im Level 3
+			case 3:	if(Zeitdiff>12 && ((Spielball1Ptr->xpos<=Schlaeger1Ptr->xpos) || (Spielball1Ptr->xpos>=Schlaeger2Ptr->xpos))){			//Geschwindigkeit wird nur erhöht, wenn der Ball auf einen Schläger trifft
 						Spielball1Ptr->GeschwindigkeitsFaktor++;
 						*Startzeit=time(NULL);
 					}
 					//Testprint
-					printf("Zeitdiff: %d\t Geschwindigkeitsfaktor: %d\n",Zeitdiff,Spielball1Ptr->GeschwindigkeitsFaktor);
+					//printf("Zeitdiff: %d\t Geschwindigkeitsfaktor: %d\n",Zeitdiff,Spielball1Ptr->GeschwindigkeitsFaktor);
 					break;
 
-			case 4:	if(Zeitdiff>12 && ((Spielball1Ptr->xpos<=Schlaeger1Ptr->xpos) || (Spielball1Ptr->xpos>=Schlaeger2Ptr->xpos))){
+					//Geschwindikeitserhöhung im Level 4
+			case 4:	if(Zeitdiff>12 && ((Spielball1Ptr->xpos<=Schlaeger1Ptr->xpos) || (Spielball1Ptr->xpos>=Schlaeger2Ptr->xpos))){			//Geschwindigkeit wird nur erhöht, wenn der Ball auf einen Schläger trifft
 						Spielball1Ptr->GeschwindigkeitsFaktor++;
 						*Startzeit=time(NULL);
 					}
 					//Testprint
-					printf("Zeitdiff: %d\t Geschwindigkeitsfaktor: %d\n",Zeitdiff,Spielball1Ptr->GeschwindigkeitsFaktor);
+					//printf("Zeitdiff: %d\t Geschwindigkeitsfaktor: %d\n",Zeitdiff,Spielball1Ptr->GeschwindigkeitsFaktor);
 					break;
 
-			case 5:	if(Zeitdiff>12 && ((Spielball1Ptr->xpos<=Schlaeger1Ptr->xpos) || (Spielball1Ptr->xpos>=Schlaeger2Ptr->xpos))){
+					//Geschwindikeitserhöhung im Level 5
+			case 5:	if(Zeitdiff>12 && ((Spielball1Ptr->xpos<=Schlaeger1Ptr->xpos) || (Spielball1Ptr->xpos>=Schlaeger2Ptr->xpos))){			//Geschwindigkeit wird nur erhöht, wenn der Ball auf einen Schläger trifft
 						Spielball1Ptr->GeschwindigkeitsFaktor++;
 						*Startzeit=time(NULL);
 					}
 					//Testprint
-					printf("Zeitdiff: %d\t Geschwindigkeitsfaktor: %d\n",Zeitdiff,Spielball1Ptr->GeschwindigkeitsFaktor);
+					//printf("Zeitdiff: %d\t Geschwindigkeitsfaktor: %d\n",Zeitdiff,Spielball1Ptr->GeschwindigkeitsFaktor);
 					break;
 
 			default: break;

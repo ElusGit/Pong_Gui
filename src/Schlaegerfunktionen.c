@@ -247,7 +247,7 @@ int SchlaegerPos(Schlaeger *Schlaeger1Ptr, Schlaeger *Schlaeger2Ptr, AnzeigePara
 
 
 		//Abbruchfall
-		if (Key==W_KEY_ESCAPE){									//Escape Taste verwerten
+		if (Key==W_KEY_ESCAPE){																//Escape Taste verwerten
 			return 0;
 		}
 	}
@@ -435,7 +435,7 @@ void ComputerSchlaeger2(SpielModus *ModusPtr, Schlaeger *Schlaeger2Ptr, Ball *Sp
 	int ySpeedPad;
 
 	//Schnelligkeit der Schlägerbewegung in Abhängigkeit des Schwierigkeitsgrades
-	ySpeedPad=5+(ModusPtr->Schwierigkeitsgrad);
+	ySpeedPad=3+3*(ModusPtr->Schwierigkeitsgrad);
 
 	//Ist der Schläger unterhalb des Balles
 	if((SpielballPtr->ypos <= Schlaeger2Ptr->yzonea+2) && (Schlaeger2Ptr->ypos>12)){
