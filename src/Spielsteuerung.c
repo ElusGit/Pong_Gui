@@ -25,19 +25,19 @@
 **
 **	Parameter	: Initialisationswerte...
 **
-**	Rückgabe	: Was gibts zurück..
+**	Rückgabe	: Nichts
 **
-**	Input		: Spieldaten
+**	Input		: Zeiger auf den Spielmodus, Zeiger auf die Struktr der Punkte Anwärter
 **
 **	Output		: Welche Daten werden verändert...
 **
 ** 	Author		: kupfe1/alles1
 **
-**	Version		: 1V06
+**	Version		: 1V07
 **
 **	History		: .....
 **
-**	Pendenzen	: Implementierung Level 5 und Punkte
+**	Pendenzen	: Implementierung unterschiedliches Abprallverhalten wenn der Ball auf einen Schläger trifft, der in Bewegung ist.
 **
 **	Bugs		: Was geht noch nicht...
 **
@@ -48,7 +48,7 @@
 **				  Test von 1V04 am 22.03.2015
 **				  Test von 1V05 am 23.03.2015
 **				  Test von 1V06 am 01.04.2015
-**
+** 				  Test von 1V07 am 05.04.2015
 **
 *****************************************************************************
 **
@@ -83,7 +83,6 @@
 **
 ** 	Author				: kupfe1/alles1
 **
-
 ******************************************************************************/
 
 //Hauptsteuerung
@@ -144,23 +143,18 @@ void SpielSteuerung(SpielModus *ModusPtr, PunkteHighscore *PunkteAnwaerterPtr){
 		EscGedrueckt=1;								//Abbruchflag wenn ESC gedrückt wird initialisieren
 
 
-		//Wenn im Level 5 und im Zweispielermodus gespielt wird, zweiter Ball initialisieren
-		if(ModusPtr->Schwierigkeitsgrad==5 && ModusPtr->ZweiSpieler==1){
-		//Startparameter Ball	2
-		Spielball2Ptr->xnull=650;
-		Spielball2Ptr->ynull=500;
-		Spielball2Ptr->vx=-2;
-		Spielball2Ptr->vy=1;
-		Spielball2Ptr->Zeit=1;
-		Spielball2Ptr->GeschwindigkeitsFaktor=2;
-		}
-
 
 		//Schlägerdimension berechenen, Startpositionen definieren und Steuerflags setzen
 		BerechneSchlaegerdimension(Schlaeger1Ptr, Schlaeger2Ptr, ModusPtr, UebergabeAnzeigePtr);
 
 		//Startposition Ball berechnen
-		StartPosBall(Spielball1Ptr, ModusPtr, GewinnerPtr);
+		StartPosBall1(Spielball1Ptr, ModusPtr, GewinnerPtr);
+
+		//Wenn im Level 5 und im Zweispielermodus gespielt wird, zweiter Ball initialisieren
+		if(ModusPtr->Schwierigkeitsgrad==5 && ModusPtr->ZweiSpieler==1){
+		//Startparameter Ball	2
+			StartPosBall2(Spielball2Ptr);
+		}
 
 		//Startzeit einlesen
 		*StartzeitPtr=time(NULL);							//Startzeit setzen
@@ -232,16 +226,6 @@ void SpielSteuerung(SpielModus *ModusPtr, PunkteHighscore *PunkteAnwaerterPtr){
 			Ball1ImSpiel=1;							//Abbruchflag wenn der Ball ins Aus geht
 			Ball2ImSpiel=1;							//Abbruchflag wenn der Ball 2 ins Aus geht initialisieren
 
-			//Wenn im Level 5 gespielt wird, zweiter Ball initialisieren
-			if(ModusPtr->Schwierigkeitsgrad==5 && ModusPtr->ZweiSpieler==1){
-			//Startparameter Ball	2
-			Spielball2Ptr->xnull=650;
-			Spielball2Ptr->ynull=500;
-			Spielball2Ptr->vx=-2;
-			Spielball2Ptr->vy=-1;
-			Spielball2Ptr->Zeit=1;
-			Spielball2Ptr->GeschwindigkeitsFaktor=2;
-			}
 
 			//Schlägerdimension berechenen, Startpositionen definieren und Steuerflags setzen
 			BerechneSchlaegerdimension(Schlaeger1Ptr, Schlaeger2Ptr, ModusPtr, UebergabeAnzeigePtr);
@@ -251,8 +235,14 @@ void SpielSteuerung(SpielModus *ModusPtr, PunkteHighscore *PunkteAnwaerterPtr){
 				BerechneHindernissPos(Hinderniss1Ptr, Hinderniss2Ptr,UebergabeAnzeigePtr);
 			}
 
-			//Startposition Ball berechnen
-			StartPosBall(Spielball1Ptr, ModusPtr, GewinnerPtr);
+			//Startposition Ball 1 berechnen
+			StartPosBall1(Spielball1Ptr, ModusPtr, GewinnerPtr);
+
+			//Wenn im Level 5 gespielt wird, zweiter Ball initialisieren
+			if(ModusPtr->Schwierigkeitsgrad==5 && ModusPtr->ZweiSpieler==1){
+			//Startparameter Ball	2
+			StartPosBall2(Spielball2Ptr);
+			}
 
 			//Startzeit einlesen
 			*StartzeitPtr=time(NULL);							//Startzeit setzen
@@ -305,8 +295,8 @@ void SpielSteuerung(SpielModus *ModusPtr, PunkteHighscore *PunkteAnwaerterPtr){
 				if(ModusPtr->Schwierigkeitsgrad==4){
 				DrawTextXY(1300,600, COL_GREEN, "Level 4");
 				}
-				if(ModusPtr->Schwierigkeitsgrad==5){
 
+				if(ModusPtr->Schwierigkeitsgrad==5){
 				DrawTextXY(1300,600, COL_GREEN, "Level 5");
 				}
 

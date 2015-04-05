@@ -18,7 +18,7 @@
 **
 ** 	Author		: kupfe1/alles1
 **
-**	Version		: 1V04
+**	Version		: 1V05
 **
 **	History		: .....
 **
@@ -31,6 +31,7 @@
 **				  Test von 1V02 am 16.03.2015
 **				  Test von 1V03 am 22.03.2015
 **				  Test von 1V04 am 01.04.2015
+**				  Test von 1V05 am 05.04.2015
 **
 ******************************************************************************/
 
@@ -395,7 +396,7 @@ int BallPos(Ball *SpielballPtr,
 **	BTE 5052	FS2015
 *****************************************************************************
 **
-**	Funktionsname   	: StartPosBall
+**	Funktionsname   	: StartPosBall1
 **
 **	Funktion   			: Berechnug der Startposition des Balles am Anfang eines Spiels
 **
@@ -408,7 +409,7 @@ int BallPos(Ball *SpielballPtr,
 ** 	Author				: kupfe1/alles1
 **
 ******************************************************************************/
-void StartPosBall(Ball *SpielballPtr, SpielModus *ModusPtr, int *GewinnerPtr){
+void StartPosBall1(Ball *SpielballPtr, SpielModus *ModusPtr, int *GewinnerPtr){
 
 		//Variablen
 		int Zufallszahl;										//Zufallszahl um die erste Startposition zu bestimmen
@@ -477,7 +478,43 @@ void StartPosBall(Ball *SpielballPtr, SpielModus *ModusPtr, int *GewinnerPtr){
 }
 
 /*****************************************************************************
-**	Ende StartPosBall
+**	Ende StartPosBall1
+*****************************************************************************/
+
+/**
+*****************************************************************************
+**	Projekt Pong
+**	BTE 5052	FS2015
+*****************************************************************************
+**
+**	Funktionsname   	: StartPosBall2
+**
+**	Funktion   			: Berechnug der Startposition des Balles am Anfang eines Spiels
+**
+**	Rückgabe			: Nichts
+**
+**	Input				: Zeiger auf den Spielball, Zeiger auf den Modus und Zeiger auf den Gewinner
+**
+**	Output				: Es wird direkt an die Adresse des Spielball geschrieben.
+**
+** 	Author				: kupfe1/alles1
+**
+******************************************************************************/
+void StartPosBall2(Ball *SpielballPtr){
+
+	//Startparameter Ball	2
+	SpielballPtr->xnull=650;
+	SpielballPtr->ynull=500;
+	SpielballPtr->vx=-2;
+	SpielballPtr->vy=1;
+	SpielballPtr->Zeit=1;
+	SpielballPtr->GeschwindigkeitsFaktor=2;
+
+	return;
+}
+
+/*****************************************************************************
+**	Ende StartPosBall2
 *****************************************************************************/
 
 /**
