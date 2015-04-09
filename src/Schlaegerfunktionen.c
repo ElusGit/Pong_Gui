@@ -12,8 +12,7 @@
 **
 **	File        : Schlaegerfunktionen.c
 **
-**	Funktion   	: Unterfunktionen für die Schlägerverschiebung. Hauptfunktion für die Schlägerverschiebung, wo die Tasteneingaben ausgewertet werden.
-**				  Funktion für die berechnung der Schlägerdimensionen.
+**	Funktion   	: Unterfunktionen für die Schlägerverschiebungen und für die Berechnung der Schlägerdimensionen.
 **
 **	Parameter	: Initialisationswerte...
 **
@@ -197,7 +196,7 @@ static void Schlaeger2Ab(int ySpeedPad, Schlaeger *Schlaeger2Ptr, AnzeigeParamet
 //Hauptfunktion Schlägerposition
 int SchlaegerPos(Schlaeger *Schlaeger1Ptr, Schlaeger *Schlaeger2Ptr, AnzeigeParameter *UebergabeAnzeigePtr, SpielModus *ModusPtr){
 	//Steuervariablen
-	int ySpeedPad=8;
+	int ySpeedPad=7+ModusPtr->Schwierigkeitsgrad;				//Geschwindigkeit der Schläger mit zunemendem SChwierigkeitsgrad erhöhen
 	int Key;
 
 	//Funktion
@@ -439,11 +438,11 @@ void ComputerSchlaeger2(SpielModus *ModusPtr, Schlaeger *Schlaeger2Ptr, Ball *Sp
 
 	//Ist der Schläger unterhalb des Balles
 	if((SpielballPtr->ypos <= Schlaeger2Ptr->yzonea+2) && (Schlaeger2Ptr->ypos>12)){
-		Schlaeger2Auf(ySpeedPad, Schlaeger2Ptr, UebergabeAnzeigePtr);
+		Schlaeger2Auf(ySpeedPad, Schlaeger2Ptr, UebergabeAnzeigePtr);						//Schläger aufwärts bewegen
 	}
 	//Ist der Schläger oberhalb des Balles
 	if((SpielballPtr->ypos >= Schlaeger2Ptr->yzonec-2) &&  (Schlaeger2Ptr->yzoned<750)){
-		Schlaeger2Ab(ySpeedPad, Schlaeger2Ptr, UebergabeAnzeigePtr);
+		Schlaeger2Ab(ySpeedPad, Schlaeger2Ptr, UebergabeAnzeigePtr);						//Schläger abwärts bewegen
 	}
 
 	return;

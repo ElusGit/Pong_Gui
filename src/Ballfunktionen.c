@@ -277,7 +277,7 @@ int BallPos(Ball *SpielballPtr,
 
 	//Um an den Spielfeldgrenzen ein "Festkleben" des Balles zu verhindern, wird für eine gewisse Anzahl Zeitdurchläufe
 	//die Steuerung deaktiviert.
-	if((SpielballPtr->Zeit)>4){
+	if((SpielballPtr->Zeit)>6){
 
 		//Abprallfälle durchtesten
 

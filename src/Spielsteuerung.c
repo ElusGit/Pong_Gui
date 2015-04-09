@@ -166,7 +166,7 @@ void SpielSteuerung(SpielModus *ModusPtr, PunkteHighscore *PunkteAnwaerterPtr){
 
 		//Countdown
 		for(ZaehlerCountdown=1; ZaehlerCountdown<=3;ZaehlerCountdown++){
-//			InfoVar(ZaehlerCountdown);
+			InfoVar(ZaehlerCountdown);
 			printf("Countdown: %d", ZaehlerCountdown);
 			WaitMs(1000);
 		}
@@ -212,7 +212,6 @@ void SpielSteuerung(SpielModus *ModusPtr, PunkteHighscore *PunkteAnwaerterPtr){
 		//Steuervariablen initialisieren
 		EscGedrueckt=1;								//Abbruchflag wenn ESC gedrückt wird
 
-
 		//Punkte GUI initialisieren
 		PunkteGUI(ModusPtr, GewinnerPtr, UebergabeAnzeigePtr);
 
@@ -238,7 +237,7 @@ void SpielSteuerung(SpielModus *ModusPtr, PunkteHighscore *PunkteAnwaerterPtr){
 			//Startposition Ball 1 berechnen
 			StartPosBall1(Spielball1Ptr, ModusPtr, GewinnerPtr);
 
-			//Wenn im Level 5 gespielt wird, zweiter Ball initialisieren
+			//Wenn im Level 5 und im Zweispielermodus gespielt wird, zweiter Ball initialisieren
 			if(ModusPtr->Schwierigkeitsgrad==5 && ModusPtr->ZweiSpieler==1){
 			//Startparameter Ball	2
 			StartPosBall2(Spielball2Ptr);
@@ -249,7 +248,7 @@ void SpielSteuerung(SpielModus *ModusPtr, PunkteHighscore *PunkteAnwaerterPtr){
 
 			//Countdown
 			for(ZaehlerCountdown=1; ZaehlerCountdown<=3;ZaehlerCountdown++){
-	//			InfoVar(ZaehlerCountdown);
+				InfoVar(ZaehlerCountdown);
 				printf("Countdown: %d", ZaehlerCountdown);
 				WaitMs(1000);
 			}
